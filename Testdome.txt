@@ -1,0 +1,767 @@
+5. Web ShopSQL JOINS PUBLIC
+Each item in a web shop belongs to a seller. To ensure service quality, each seller has a rating.
+
+The data are kept in the following two tables:
+
+TABLE sellers
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  rating INTEGER NOT NULL
+
+TABLE items
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  sellerId INTEGER REFERENCES sellers(id)
+Write a query that selects the item name and the name of its seller for each item that belongs to a seller with a rating greater than 4.
+
+See the example case for more details.
+-- Suggested testing environment: 
+-- http://sqlite.online/
+
+-- Example case create statement:
+CREATE TABLE sellers (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  rating INTEGER NOT NULL
+);
+
+CREATE TABLE items (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  sellerId INTEGER REFERENCES sellers(id)
+);
+
+INSERT INTO sellers(id, name, rating) VALUES(1, 'Roger', 3);
+INSERT INTO sellers(id, name, rating) VALUES(2, 'Penny', 5);
+
+INSERT INTO items(id, name, sellerId) VALUES(1, 'Notebook', 2);
+INSERT INTO items(id, name, sellerId) VALUES(2, 'Stapler', 1);
+INSERT INTO items(id, name, sellerId) VALUES(3, 'Pencil', 2);
+
+-- Expected output (in any order):
+-- Item      Seller
+-- ----------------
+-- Notebook  Penny
+-- Pencil    Penny
+Answer----
+SELECT items.name,sellers.name FROM items INNER JOIN sellers on items.sellerId=sellers.id WHERE rating > 4 ORDER BY sellerId;
+
+name        name1     
+----------------- 
+Notebook    Penny     
+Pencil      Penny     
+
+
+Your score is 100%, perfect!
+
+
+
+6. Users And RolesSQL CONSTRAINTS PUBLIC NEW
+The following two tables are used to define users and their respective roles:
+
+TABLE users
+  id INTEGER NOT NULL PRIMARY KEY,
+  userName VARCHAR(50) NOT NULL
+
+TABLE roles
+  id INTEGER NOT NULL PRIMARY KEY,
+  role VARCHAR(20) NOT NULL
+The users_roles table should contain the mapping between each user and their roles. Each user can have many roles, and each role can have many users.
+
+Improve the provided create table statement so that:
+
+Only users from the users table can exist within users_roles.
+Only roles from the roles table can exist within users_roles.
+A user can only have a specific role once.
+See the example case for more details.
+-- Suggested testing environment: 
+-- http://sqlite.online/
+-- PRAGMA foreign_keys = ON; -- Enable foreign key support in SQLite.
+
+-- Example case create statement:
+CREATE TABLE users (
+  id INTEGER NOT NULL PRIMARY KEY,
+  userName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE roles (
+  id INTEGER NOT NULL PRIMARY KEY,
+  role VARCHAR(20) NOT NULL
+);
+
+INSERT INTO users(id, userName) VALUES(1, 'Steven Smith');
+INSERT INTO users(id, userName) VALUES(2, 'Brian Burns');
+
+INSERT INTO roles(id, role) VALUES(1, 'Project Manager');
+INSERT INTO roles(id, role) VALUES(2, 'Solution Architect');
+
+-- Improve the create table statement below:
+CREATE TABLE users_roles (
+  userId INTEGER,
+  roleId INTEGER
+);
+
+-- The statements below should pass.
+INSERT INTO users_roles(userId, roleId) VALUES(1, 1);
+INSERT INTO users_roles(userId, roleId) VALUES(1, 2);
+INSERT INTO users_roles(userId, roleId) VALUES(2, 2);
+
+-- The statement below should fail.
+INSERT INTO users_roles(userId, roleId) VALUES(2, NULL);
+Answer------
+create table if not exists users (
+  id INTEGER not null,
+  userName varchar(50) not null,
+  primary key(id),
+  unique(userName)
+);
+
+create table if not exists roles (
+  id INTEGER not null,
+  role varchar(20) not null,
+  primary key(id),
+  unique(role)
+);
+
+create table if not exists users_roles (
+  userId INTEGER not null,
+  roleId INTEGER not null,
+  FOREIGN KEY (userId) REFERENCES users(id),
+  FOREIGN KEY (roleId) REFERENCES roles(id),
+  unique(userId, roleId)
+);
+
+userId    roleId     
+---------------- 
+1         1          
+1         2          
+2         2          
+
+Report a problem with this question
+Your score is 100%, perfect!
+
+7. WorkersSQL SUBQUERIES PUBLIC
+The following data definition defines an organization's employee hierarchy.
+
+An employee is a manager if any other employee has their managerId set to the first employees id. An employee who is a manager may or may not also have a manager.
+
+TABLE employees
+  id INTEGER NOT NULL PRIMARY KEY
+  managerId INTEGER REFERENCES employees(id)
+  name VARCHAR(30) NOT NULL
+Write a query that selects the names of employees who are not managers.
+
+See the example case for more details.
+
+-- Suggested testing environment:
+-- http://sqlite.online/
+
+-- Example case create statement:
+CREATE TABLE employees (
+  id INTEGER NOT NULL PRIMARY KEY,
+  managerId INTEGER REFERENCES employees(id), 
+  name VARCHAR(30) NOT NULL
+);
+
+INSERT INTO employees(id, managerId, name) VALUES(1, NULL, 'John');
+INSERT INTO employees(id, managerId, name) VALUES(2, 1, 'Mike');
+
+-- Expected output (in any order):
+-- name
+-- ----
+-- Mike
+
+-- Explanation:
+-- In this example.
+-- John is Mike's manager. Mike does not manage anyone.
+-- Mike is the only employee who does not manage anyone.
+
+Answer--
+
+-- Write only the SQL statement that solves the problem and nothing else.
+SELECT name
+FROM employees
+WHERE (id NOT IN (SELECT managerId FROM employees WHERE (managerId IS NOT NULL)))
+
+
+
+Sample question
+
+-- Suggested testing environment: 
+-- http://sqlite.online/
+
+-- Example case create statement:
+CREATE TABLE cities (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL
+);
+INSERT INTO cities(id, name) values(1, 'Los Angeles');
+INSERT INTO cities(id, name) values(2, 'Washington');
+INSERT INTO cities(id, name) values(3, 'New York');
+
+-- Write only the SQL statement that solves the problem and nothing else.
+Select name from cities order by name DESC;
+
+-- Expected output:
+-- Washington
+-- New York
+-- Los Angeles
+
+
+
+C# QUESTION of Testdome-------------------------------------------------------------
+
+1. PalindromeC# STRINGS PUBLIC
+A palindrome is a word that reads the same backward or forward.
+
+Write a function that checks if a given word is a palindrome. Character case should be ignored.
+
+For example, IsPalindrome("Deleveled") should return true as character case should be ignored, resulting in "deleveled", which is a palindrome since it reads the same backward and forward.
+
+
+Answer------
+using System;
+
+public class Palindrome
+{
+    public static bool IsPalindrome(string word)
+    {
+        int min = 0;
+        int max = word.Length - 1;
+        while (true)
+        {
+            if (min > max)
+            {
+                return true;
+            }
+            char a = word[min];
+            char b = word[max];
+            if (char.ToLower(a) != char.ToLower(b))
+            {
+                return false;
+            }
+            min++;
+            max--;
+        }
+       
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine(Palindrome.IsPalindrome("Deleveled"));
+    }
+}
+
+Compilation OK
+
+
+True 
+Your score is 100%, perfect!
+
+2. Binary Search TreeC# ALGORITHMIC THINKING DATA STRUCTURES PUBLIC
+A three-node binary tree.Binary search tree (BST) is a binary tree where the value of each node is larger or equal to the values in all the nodes in that node's left subtree and is smaller than the values in all the nodes in that node's right subtree.
+
+Write a function that checks if a given binary search tree contains a given value.
+
+For example, for the following tree:
+
+n1 (Value: 1, Left: null, Right: null)
+n2 (Value: 2, Left: n1, Right: n3)
+n3 (Value: 3, Left: null, Right: null)
+Call to Contains(n2, 3) should return true since a tree with root at n2 contains number 3.
+
+
+Answer----------------------------------
+
+using System;
+
+public class Node
+{
+    public int Value { get; set; }
+
+    public Node Left { get; set; }
+
+    public Node Right { get; set; }
+
+    public Node(int value, Node left, Node right)
+    {
+        Value = value;
+        Left = left;
+        Right = right;
+    }
+}
+
+public class BinarySearchTree
+{
+  public static bool Contains(Node root, int value)
+  {
+     if (root == null)
+    {
+        return false;
+    }
+    else if (root.Value == value)
+    {
+        return true;
+    }
+    else if (root.Value < value)
+    {
+        return  Contains(root.Right, value);
+    }
+    else
+    {
+        return Contains(root.Left, value);
+    }
+ }
+
+    public static void Main(string[] args)
+    {
+        Node n1 = new Node(1, null, null);
+        Node n3 = new Node(3, null, null);
+        Node n2 = new Node(2, n1, n3);
+
+        Console.WriteLine(Contains(n2, 3));
+    }
+}
+Compilation OK
+
+
+True 
+
+Your score is 100%, perfect!
+
+3. User InputC# OOP PUBLIC
+User interface contains two types of user input controls: TextInput, which accepts all characters and NumericInput, which accepts only digits.
+
+Implement the class TextInput that contains:
+
+Public method void Add(char c) - adds the given character to the current value
+Public method string GetValue() - returns the current value
+Implement the class NumericInput that:
+
+Inherits TextInput
+Overrides the Add method so that each non-numeric character is ignored
+For example, the following code should output "10":
+
+TextInput input = new NumericInput();
+input.Add('1');
+input.Add('a');
+input.Add('0');
+Console.WriteLine(input.GetValue());
+
+Answer------------------------------------------
+
+using System;
+using System.Collections.Generic;
+public class TextInput
+{
+    public IList<char> list = new List<char>();
+
+    public virtual void Add(char c)
+    {
+        list.Add(c);
+    }
+
+    public string GetValue()
+    {
+        string r = "";
+        foreach (char l in list)
+        {
+            r = r + l;
+        }
+        return r;
+    }
+}
+
+public class NumericInput : TextInput
+{
+    public override void Add(char c)
+    {
+        if (c < '0' || c > '9') { }
+        else
+            list.Add(c);
+    }    
+}
+
+public class UserInput
+{
+    public static void Main(string[] args)
+    {
+        TextInput input = new NumericInput();
+        input.Add('1');
+        input.Add('a');
+        input.Add('0');
+        Console.WriteLine(input.GetValue());
+    }
+}
+
+using System;
+using System.Collections.Generic;
+public class TextInput
+{
+    public IList<char> list = new List<char>();
+
+    public virtual void Add(char c)
+    {
+        list.Add(c);
+    }
+
+    public string GetValue()
+    {
+        string r = "";
+        foreach (char l in list)
+        {
+            r = r + l;
+        }
+        return r;
+    }
+}
+
+public class NumericInput : TextInput
+{
+    public override void Add(char c)
+    {
+        if (c < '0' || c > '9') { }
+        else
+            list.Add(c);
+    }    
+}
+
+public class UserInput
+{
+    public static void Main(string[] args)
+    {
+        TextInput input = new NumericInput();
+        input.Add('1');
+        input.Add('a');
+        input.Add('0');
+        Console.WriteLine(input.GetValue());
+    }
+}
+
+Compilation OK
+
+
+10 
+
+Your score is 100%, perfect!
+
+4. Two SumC# ALGORITHMIC THINKING SEARCHING PUBLIC
+Write a function that, given a list and a target sum, returns zero-based indices of any two distinct elements whose sum is equal to the target sum. If there are no such elements, the function should return null.
+
+For example, FindTwoSum(new List<int>() { 1, 3, 5, 7, 9 }, 12) should return a Tuple<int, int> containing any of the following pairs of indices:
+
+1 and 4 (3 + 9 = 12)
+2 and 3 (5 + 7 = 12)
+3 and 2 (7 + 5 = 12)
+4 and 1 (9 + 3 = 12)
+DifficultyEasy 
+Time30min
+
+
+Answer-------
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+class TwoSum
+{
+    public static Tuple<int, int> FindTwoSum(IList<int> list, int sum)
+    {
+        HashSet<int> hs = new HashSet<int>();
+    for (int i = 0; i < list.Count; i++)
+    {
+        var needed = sum - list[i];
+        if (hs.Contains(needed))
+        {
+            return Tuple.Create(list.IndexOf(needed), i);
+        }
+        hs.Add(list[i]);                
+    }
+    return null;
+    }
+
+    public static void Main(string[] args)
+    {
+        Tuple<int, int> indices = FindTwoSum(new List<int>() { 1, 3, 5, 7, 9 }, 12);
+        Console.WriteLine(indices.Item1 + " " + indices.Item2);
+    }
+}
+Compilation OK
+
+
+2 3 
+Report a problem with this question
+Your score is 100%, perfect!
+
+5. Folders
+Implement a function FolderNames, which accepts a string containing an XML file that specifies folder structure and returns all folder names that start with startingLetter. The XML format is given in the example below.
+
+For example, for the letter 'u' and XML file:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<folder name="c">
+    <folder name="program files">
+        <folder name="uninstall information" />
+    </folder>
+    <folder name="users" />
+</folder>
+the function should return "uninstall information" and "users" (in any order).
+
+C# 7.0, .NET Framework 4.7    
+
+6. Sorted SearchC# ALGORITHMIC THINKING SEARCHING PUBLIC
+Implement function CountNumbers that accepts a sorted array of integers and counts the number of array elements that are less than the parameter lessThan.
+
+For example, SortedSearch.CountNumbers(new int[] { 1, 3, 5, 7 }, 4) should return 2 because there are two array elements less than 4.
+
+using System;
+
+public class SortedSearch
+{
+    	
+
+public static int CountNumbers(int[] sortedArray, int lessThan)
+{
+    //Handle all the corner cases
+    int legthOfArray = sortedArray.Length;
+    if (legthOfArray == 0) return 0;
+    if (sortedArray[0] >= lessThan) return 0;
+    if (sortedArray[legthOfArray - 1] < lessThan) return legthOfArray;
+    return FindIndexGreaterOrEqualIndex(sortedArray, legthOfArray, lessThan, legthOfArray / 2);
+}
+
+public static int FindIndexGreaterOrEqualIndex(int[] sortedArray, int lengthOfArray, int lessThan, int currentIndex)
+{
+    while (true)
+    {
+        bool isCurrentElementLessThan = sortedArray[currentIndex] < lessThan;
+        if (isCurrentElementLessThan) // Traverse Right hand side of binary tree.
+            currentIndex = (int)Math.Ceiling((decimal)(currentIndex + lengthOfArray - 1) / 2);
+        else if (sortedArray[currentIndex - 1] < lessThan && !isCurrentElementLessThan) 
+    //If array element is not less than and previous element is less than the given element. i.e. our answer so break the loop.
+            break;
+        else // Traverse Left hand side of binary tree.
+            currentIndex = (int)Math.Ceiling((decimal)currentIndex / 2);
+    }
+    return currentIndex;
+}
+    public static void Main(string[] args)
+    {
+        Console.WriteLine(SortedSearch.CountNumbers(new int[] { 1, 3, 5, 7 }, 4));
+    }
+}
+
+Compilation OK
+
+
+2 
+Report a problem with this question
+Your score is 100%, perfect!
+
+7. Train CompositionC# ALGORITHMIC THINKING DATA STRUCTURES PUBLIC
+A TrainComposition is built by attaching and detaching wagons from the left and the right sides.
+
+For example, if we start by attaching wagon 7 from the left followed by attaching wagon 13, again from the left, we get a composition of two wagons (13 and 7 from left to right). Now the first wagon that can be detached from the right is 7 and the first that can be detached from the left is 13.
+
+Implement a TrainComposition that models this problem.
+
+Two train carriages.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+public class TrainComposition
+{
+   public TrainComposition()
+{
+    Wagons = new LinkedList<int>();
+}
+
+private LinkedList<int> Wagons;
+
+public void AttachWagonFromLeft(int wagonId)
+{
+    Wagons.AddFirst(wagonId);
+}
+
+public void AttachWagonFromRight(int wagonId)
+{
+    Wagons.AddLast(wagonId);
+}
+
+public int DetachWagonFromLeft()
+{
+    var wagon = Wagons.First.Value;
+    Wagons.RemoveFirst();
+    return wagon;
+}
+
+public int DetachWagonFromRight()
+{
+    var wagon = Wagons.Last.Value;
+    Wagons.RemoveLast();
+    return wagon;
+}
+
+
+    public static void Main(string[] args)
+    {
+        TrainComposition tree = new TrainComposition();
+        tree.AttachWagonFromLeft(7);
+        tree.AttachWagonFromLeft(13);
+        Console.WriteLine(tree.DetachWagonFromRight()); // 7 
+        Console.WriteLine(tree.DetachWagonFromLeft()); // 13
+    }
+}
+Compilation OK
+
+
+7 
+13 
+Report a problem with this question
+Your score is 100%, perfect!
+
+using System;
+using System.Collections.Generic;
+?
+public class Folders
+{
+    public static IEnumerable<string> FolderNames(string xml, char startingLetter)
+    {
+        throw new NotImplementedException("Waiting to be implemented.");
+    }
+?
+    public static void Main(string[] args)
+    {
+        string xml =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<folder name=\"c\">" +
+                "<folder name=\"program files\">" +
+                    "<folder name=\"uninstall information\" />" +
+                "</folder>" +
+                "<folder name=\"users\" />" +
+            "</folder>";
+?
+        foreach (string name in Folders.FolderNames(xml, 'u'))
+            Console.WriteLine(name);
+    }
+}
+     
+
+Output
+Tests: 0 pass / 4 fail
+  Example case: System.NotImplementedException at Folders.FolderNames(String xml, Char startingLetter) in Folders.cs:line 8 
+  All folder names start with starting letter: System.NotImplementedException at Folders.FolderNames(String xml, Char startingLetter) in Folders.cs:line 8 
+  Root folder name starts with starting letter: System.NotImplementedException at Folders.FolderNames(String xml, Char startingLetter) in Folders.cs:line 8 
+  Complicated folder structure: System.NotImplementedException at Folders.FolderNames(String xml, Char startingLetter) in Folders.cs:line 8 
+
+ANSWER-----
+
+using System;
+using System.Collections.Generic;
+using System.Xml;
+
+public class Folders
+{
+    public static IEnumerable<string> FolderNames(string xml, char startingLetter)
+    {
+        List<string> elem = new List<string>();
+
+        XmlDocument xmldoc = new XmlDocument();
+        xmldoc.LoadXml(xml);
+
+    foreach (XmlAttribute folderName in xmldoc.SelectNodes("//folder/@name[starts-with(., '"+ startingLetter +"')]"))
+    {
+        elem.Add(folderName.Value);
+        Console.WriteLine(folderName.Value);
+    }
+
+    return elem;
+    }
+
+    public static void Main(string[] args)
+    {
+        string xml =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<folder name=\"c\">" +
+                "<folder name=\"program files\">" +
+                    "<folder name=\"uninstall information\" />" +
+                "</folder>" +
+                "<folder name=\"users\" />" +
+            "</folder>";
+
+        foreach (string name in Folders.FolderNames(xml, 'u'))
+            Console.WriteLine(name);
+    }
+}
+
+
+
+
+8--Write a function that provides change directory (cd) function for an abstract file system.
+
+Notes:
+
+Root path is '/'.
+Path separator is '/'.
+Parent directory is addressable as "..".
+Directory names consist only of English alphabet letters (A-Z and a-z).
+The function should support both relative and absolute paths.
+The function will not be passed any invalid paths.
+Do not use built-in path-related functions.
+For example:
+
+Path path = new Path("/a/b/c/d");
+path.Cd("../x");
+Console.WriteLine(path.CurrentPath);
+should display '/a/b/c/x'.
+
+
+
+Answer-----------------------
+using System;
+using System.Collections.Generic;
+
+
+public class Path
+{
+    public string CurrentPath { get; private set; }
+
+    public Path(string path)
+    {
+        this.CurrentPath = path;
+    }
+
+    public void Cd(string newPath)
+    {
+        //absolute path
+        if (newPath.StartsWith("/")) {
+            CurrentPath = newPath;
+        } else if (newPath.Contains("../")) {
+            var pathList = new LinkedList<string>(CurrentPath.Split('/'));
+            var newPathList = newPath.Split('/');
+            foreach (var item in newPathList) {
+                if (item == "..") {
+                    if (pathList.Count > 0)
+                        pathList.RemoveLast();
+                } else {
+                    pathList.AddLast(item);
+                }
+            }
+            CurrentPath = string.Join("/", pathList);
+            if (!CurrentPath.StartsWith("/"))
+                CurrentPath = "/" + CurrentPath;
+         } else {
+            CurrentPath += "/" + newPath;
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Path path = new Path("/a/b/c/d");
+        path.Cd("../x");
+        Console.WriteLine(path.CurrentPath);
+    }
+}
