@@ -1,3 +1,8 @@
+1.Select COUNT(*) FROM students where firstName='John';
+2.UPDATE enrollments SET year=2015 where id>=20 AND id<=100;
+3.Select DISTINCT name from dogs UNION Select DISTINCT name from cats;
+4.Select userId,AVG(duration) from sessions GROUPBY userId HAVING COUNT(userId)>1;
+
 5. Web ShopSQL JOINS PUBLIC
 Each item in a web shop belongs to a seller. To ensure service quality, each seller has a rating.
 
